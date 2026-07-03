@@ -10,7 +10,7 @@ This framework establishes a central orchestrator that coordinates tasks across 
 
 The system operates in a hub-and-spoke model where the **Orchestrator** (the hub) designs and routes tasks, the **Broker** serves as the communications channel, and the **Subagents** (spokes) process individual instructions.
 
-![Architecture Overview Sequence Diagram](sequence_diagram.png)
+
 
 ```mermaid
 sequenceDiagram
@@ -46,7 +46,7 @@ sequenceDiagram
 #### 1. Orchestrator Graph Flow
 This graph defines the execution cycle of the central orchestrator, controlling round-based iterations:
 
-![Orchestrator Graph Flowchart](orchestrator_flow.png)
+
 
 ```mermaid
 graph TD
@@ -66,7 +66,7 @@ graph TD
 #### 2. Subagent Graph Flow
 This graph defines the execution path inside each subagent worker client:
 
-![Subagent Graph Flowchart](subagent_flow.png)
+
 
 ```mermaid
 graph TD
