@@ -53,8 +53,8 @@ graph TD
     StartNode([START]) --> CentralNode[Central Node: Prepare message and Increment Round]
     CentralNode --> BrokerNode[Broker Node: Distribute tasks to FastAPI Broker and wait]
     BrokerNode --> DecisionNode{should_continue}
-    DecisionNode -->|Round_No is less than 10| CentralNode
-    DecisionNode -->|Round_No is 10 or more| EndNode([END])
+    DecisionNode -->|Round_No is less| CentralNode
+    DecisionNode -->|Round_No is more| EndNode([END])
     
     style StartNode fill:#1e1e2f,stroke:#333,stroke-width:2px;
     style EndNode fill:#1e1e2f,stroke:#333,stroke-width:2px;
