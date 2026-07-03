@@ -10,39 +10,73 @@ This framework establishes a central orchestrator that coordinates tasks across 
 
 The system operates in a hub-and-spoke model where the **Orchestrator** (the hub) designs and routes tasks, the **Broker** serves as the communications channel, and the **Subagents** (spokes) process individual instructions.
 
+![Architecture Overview Sequence Diagram](sequence_diagram.png)
+
 ```mermaid
 sequenceDiagram
-    participant Orchestrator as LangGraph Orchestrator
-    participant Broker as FastAPI Broker
-    participant AgentA as Subagent A (WebSockets Client)
-    participant AgentB as Subagent B (WebSockets Client)
+    participant Orchestrator
+    participant Broker
+    participant AgentA
+    participant AgentB
 
-    Note over AgentA, AgentB: Connect via WebSocket to ws://<broker>/connect/{agent_id}
+    Note over AgentA, AgentB: Connect via WebSocket
     AgentA->>Broker: WebSocket Connect
     AgentB->>Broker: WebSocket Connect
 
     Note over Orchestrator: Central Node Prepares Public Message
-    Orchestrator->>Broker: POST /distribute with AgentState (Public_Message)
+    Orchestrator->>Broker: POST /distribute (Public Message)
     
-    rect rgb(30, 41, 59)
-        Note over Broker: Distribute to active websocket clients
-        Broker->>AgentA: Send JSON { instruction }
-        Broker->>AgentB: Send JSON { instruction }
-    end
+    Note over Broker: Distribute task to connected WebSockets
+    Broker->>AgentA: Send task
+    Broker->>AgentB: Send task
 
-    rect rgb(15, 23, 42)
-        Note over AgentA, AgentB: Execute LangGraph Subagent workflow (Ollama / Qwen)
-        AgentA->>Broker: Send response { agent_id, result }
-        AgentB->>Broker: Send response { agent_id, result }
-    end
+    Note over AgentA, AgentB: Execute Subagent workflow (Ollama / Qwen)
+    AgentA->>Broker: Send response
+    AgentB->>Broker: Send response
 
-    Note over Broker: Aggregate responses & resolve Event
-    Broker-->>Orchestrator: HTTP 200 { status: success, responses }
-    Note over Orchestrator: Update MessagePool & Increment Round_No
-    Note over Orchestrator: If Round < 10, loop to Central Node; else END
+    Note over Broker: Aggregate responses and trigger Event
+    Broker-->>Orchestrator: HTTP 200 (responses)
+    Note over Orchestrator: Update MessagePool and Increment Round_No
 ```
 
 ---
+
+### LangGraph Workflow Graphs
+
+#### 1. Orchestrator Graph Flow
+This graph defines the execution cycle of the central orchestrator, controlling round-based iterations:
+
+![Orchestrator Graph Flowchart](orchestrator_flow.png)
+
+```mermaid
+graph TD
+    StartNode([START]) --> CentralNode[Central Node: Prepare message and Increment Round]
+    CentralNode --> BrokerNode[Broker Node: Distribute tasks to FastAPI Broker and wait]
+    BrokerNode --> DecisionNode{should_continue}
+    DecisionNode -->|Round_No is less than 10| CentralNode
+    DecisionNode -->|Round_No is 10 or more| EndNode([END])
+    
+    style StartNode fill:#1e1e2f,stroke:#333,stroke-width:2px;
+    style EndNode fill:#1e1e2f,stroke:#333,stroke-width:2px;
+    style CentralNode fill:#0284c7,stroke:#38bdf8,stroke-width:2px,color:#fff;
+    style BrokerNode fill:#0f766e,stroke:#14b8a6,stroke-width:2px,color:#fff;
+    style DecisionNode fill:#b45309,stroke:#f59e0b,stroke-width:2px,color:#fff;
+```
+
+#### 2. Subagent Graph Flow
+This graph defines the execution path inside each subagent worker client:
+
+![Subagent Graph Flowchart](subagent_flow.png)
+
+```mermaid
+graph TD
+    StartNode([START]) --> RespondNode[Respond Node: Retrieve instructions and Invoke Ollama Qwen]
+    RespondNode --> EndNode([END])
+
+    style StartNode fill:#1e1e2f,stroke:#333,stroke-width:2px;
+    style EndNode fill:#1e1e2f,stroke:#333,stroke-width:2px;
+    style RespondNode fill:#0284c7,stroke:#38bdf8,stroke-width:2px,color:#fff;
+```
 
 ## Component Directory & Structure
 
