@@ -80,13 +80,13 @@ graph TD
 
 ## Component Directory & Structure
 
-- 📄 [schemas.py](file:///c:/Users/AYUSH/Agents-Cluster/schemas.py): Contains the standard definition of `AgentState` (the state shared across the Orchestrator's execution).
-- 📄 [Orchestrator.py](file:///c:/Users/AYUSH/Agents-Cluster/Orchestrator.py): The main LangGraph coordinator defining a state graph (`Central Node` $\rightarrow$ `Broker Node` $\rightarrow$ conditional loops up to 10 rounds).
-- 📄 [broker.py](file:///c:/Users/AYUSH/Agents-Cluster/broker.py): The FastAPI application handling WebSockets and acting as the HTTP REST broker for triggering task distributions.
-- 📁 [subagent/](file:///c:/Users/AYUSH/Agents-Cluster/subagent/):
-  - 📄 [subagent.py](file:///c:/Users/AYUSH/Agents-Cluster/subagent/subagent.py): A LangGraph agent with checkpointer memory using `ChatOllama` with the `qwen2.5:1.5b` model.
-  - 📄 [app.py](file:///c:/Users/AYUSH/Agents-Cluster/subagent/app.py): The client daemon that connects to the broker via WebSockets, waits for tasks, invokes the local LangGraph subagent (with exponential backoff retries), and submits responses.
-- 📄 [verify.py](file:///c:/Users/AYUSH/Agents-Cluster/verify.py): A simple verification script to test a sample workflow through the orchestrator.
+-  [schemas.py](file:///c:/Users/AYUSH/Agents-Cluster/schemas.py): Contains the standard definition of `AgentState` (the state shared across the Orchestrator's execution).
+-  [Orchestrator.py](file:///c:/Users/AYUSH/Agents-Cluster/Orchestrator.py): The main LangGraph coordinator defining a state graph (`Central Node` $\rightarrow$ `Broker Node` $\rightarrow$ conditional loops up to 10 rounds).
+-  [broker.py](file:///c:/Users/AYUSH/Agents-Cluster/broker.py): The FastAPI application handling WebSockets and acting as the HTTP REST broker for triggering task distributions.
+-  [subagent/](file:///c:/Users/AYUSH/Agents-Cluster/subagent/):
+  -  [subagent.py](file:///c:/Users/AYUSH/Agents-Cluster/subagent/subagent.py): A LangGraph agent with checkpointer memory using `ChatOllama` with the `qwen2.5:1.5b` model.
+  -  [app.py](file:///c:/Users/AYUSH/Agents-Cluster/subagent/app.py): The client daemon that connects to the broker via WebSockets, waits for tasks, invokes the local LangGraph subagent (with exponential backoff retries), and submits responses.
+-  [verify.py](file:///c:/Users/AYUSH/Agents-Cluster/verify.py): A simple verification script to test a sample workflow through the orchestrator.
 
 ---
 
