@@ -10,7 +10,7 @@ This framework establishes a central orchestrator that coordinates tasks across 
 
 The system operates in a hub-and-spoke model where the **Orchestrator** (the hub) designs and routes tasks, the **Broker** serves as the communications channel, and the **Subagents** (spokes) process individual instructions.
 
-![Architecture Overview Sequence Diagram](sequence_diagram.png)
+
 
 ```mermaid
 sequenceDiagram
@@ -46,15 +46,15 @@ sequenceDiagram
 #### 1. Orchestrator Graph Flow
 This graph defines the execution cycle of the central orchestrator, controlling round-based iterations:
 
-![Orchestrator Graph Flowchart](orchestrator_flow.png)
+
 
 ```mermaid
 graph TD
     StartNode([START]) --> CentralNode[Central Node: Prepare message and Increment Round]
     CentralNode --> BrokerNode[Broker Node: Distribute tasks to FastAPI Broker and wait]
     BrokerNode --> DecisionNode{should_continue}
-    DecisionNode -->|Round_No is less than 10| CentralNode
-    DecisionNode -->|Round_No is 10 or more| EndNode([END])
+    DecisionNode -->|Round_No is less| CentralNode
+    DecisionNode -->|Round_No is more| EndNode([END])
     
     style StartNode fill:#1e1e2f,stroke:#333,stroke-width:2px;
     style EndNode fill:#1e1e2f,stroke:#333,stroke-width:2px;
@@ -66,7 +66,7 @@ graph TD
 #### 2. Subagent Graph Flow
 This graph defines the execution path inside each subagent worker client:
 
-![Subagent Graph Flowchart](subagent_flow.png)
+
 
 ```mermaid
 graph TD
@@ -80,13 +80,13 @@ graph TD
 
 ## Component Directory & Structure
 
-- 📄 [schemas.py](file:///c:/Users/AYUSH/Agents-Cluster/schemas.py): Contains the standard definition of `AgentState` (the state shared across the Orchestrator's execution).
-- 📄 [Orchestrator.py](file:///c:/Users/AYUSH/Agents-Cluster/Orchestrator.py): The main LangGraph coordinator defining a state graph (`Central Node` $\rightarrow$ `Broker Node` $\rightarrow$ conditional loops up to 10 rounds).
-- 📄 [broker.py](file:///c:/Users/AYUSH/Agents-Cluster/broker.py): The FastAPI application handling WebSockets and acting as the HTTP REST broker for triggering task distributions.
-- 📁 [subagent/](file:///c:/Users/AYUSH/Agents-Cluster/subagent/):
-  - 📄 [subagent.py](file:///c:/Users/AYUSH/Agents-Cluster/subagent/subagent.py): A LangGraph agent with checkpointer memory using `ChatOllama` with the `qwen2.5:1.5b` model.
-  - 📄 [app.py](file:///c:/Users/AYUSH/Agents-Cluster/subagent/app.py): The client daemon that connects to the broker via WebSockets, waits for tasks, invokes the local LangGraph subagent (with exponential backoff retries), and submits responses.
-- 📄 [verify.py](file:///c:/Users/AYUSH/Agents-Cluster/verify.py): A simple verification script to test a sample workflow through the orchestrator.
+-  [schemas.py](file:///c:/Users/AYUSH/Agents-Cluster/schemas.py): Contains the standard definition of `AgentState` (the state shared across the Orchestrator's execution).
+-  [Orchestrator.py](file:///c:/Users/AYUSH/Agents-Cluster/Orchestrator.py): The main LangGraph coordinator defining a state graph (`Central Node` $\rightarrow$ `Broker Node` $\rightarrow$ conditional loops up to 10 rounds).
+-  [broker.py](file:///c:/Users/AYUSH/Agents-Cluster/broker.py): The FastAPI application handling WebSockets and acting as the HTTP REST broker for triggering task distributions.
+-  [subagent/](file:///c:/Users/AYUSH/Agents-Cluster/subagent/):
+  -  [subagent.py](file:///c:/Users/AYUSH/Agents-Cluster/subagent/subagent.py): A LangGraph agent with checkpointer memory using `ChatOllama` with the `qwen2.5:1.5b` model.
+  -  [app.py](file:///c:/Users/AYUSH/Agents-Cluster/subagent/app.py): The client daemon that connects to the broker via WebSockets, waits for tasks, invokes the local LangGraph subagent (with exponential backoff retries), and submits responses.
+-  [verify.py](file:///c:/Users/AYUSH/Agents-Cluster/verify.py): A simple verification script to test a sample workflow through the orchestrator.
 
 ---
 
