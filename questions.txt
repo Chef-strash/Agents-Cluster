@@ -1,0 +1,324 @@
+Green flags
+These are technically reasonable.
+
+    LangGraph for multi-agent orchestration is common.
+    FastAPI + WebSockets is a standard stack.
+    Async aggregation of responses is sensible.
+    Hub-and-spoke architecture is a common orchestration pattern.
+    Using multiple machines to distribute workload is feasible.
+    Using multiple LLM API keys to avoid rate limits is something many hobbyists actually do.
+Yellow flags
+These are things I'd question.
+
+1. "Distributed workloads across multiple physical systems"
+This sounds impressive but is vague.
+
+Ask:
+
+    What were the physical systems? Three laptops? Raspberry Pis? AWS EC2? Docker containers on one PC?
+
+    If they say "multiple systems", they should immediately tell you:
+
+    number of machines
+    OS
+    network topology
+    how they communicated
+    A fake candidate usually answers:
+
+    "Different nodes."
+
+    A genuine one says something like:
+
+    "I had my desktop, my laptop, and a Raspberry Pi connected over Tailscale. Each ran one FastAPI worker."
+
+2. "Reduced experimental time by 65%"
+    This is the biggest red flag.
+
+    Almost every fake resume has an exact percentage.
+
+    Ask:
+
+    How did you measure the 65%?
+
+    Follow-ups:
+
+    What was your baseline?
+    How many experiments?
+    Average latency?
+    Median?
+    Which profiler did you use?
+    Can you show the benchmark methodology?
+    A real answer looks like:
+
+    Sequential execution took around 180 seconds for six agents. Parallel execution averaged 62 seconds over 30 runs.
+
+    A fake answer:
+
+    It was approximately faster.
+
+3. "Distributed requests across multiple API keys"
+    Ask:
+
+    Why multiple API keys?
+
+    Possible answers:
+
+    Rate limits
+    Throughput
+    Different providers
+    Cost optimization
+    Then ask:
+
+    How did you decide which key received a request?
+
+    Expected discussion:
+
+    round robin
+    least loaded
+    retry logic
+    token bucket
+    exponential backoff
+
+4. "Hub-and-spoke broker"
+    Ask them to draw it.
+
+    Literally say:
+
+    Draw the architecture on paper.
+
+    Expected:
+
+                Agent 1
+                |
+    Agent 2 -- Broker -- Agent 3
+                |
+            LangGraph
+                |
+                Client
+
+    If they cannot draw their own architecture, that's a warning sign.
+
+5. "Broadcasting execution payloads"
+Ask:
+
+    What exactly was inside the payload?
+
+    Expected answer:
+
+    {
+    "task_id": "...",
+    "prompt": "...",
+    "agent_type": "...",
+    "context": "...",
+    "history": [...]
+    }
+
+    If they only say "JSON", keep digging.
+
+6. "Aggregating responses"
+    Ask:
+
+    Suppose one agent fails after 15 seconds while the others finish in 5 seconds. What happens?
+
+    Good discussion:
+
+    timeout
+    retries
+    partial results
+    quorum
+    fail-fast
+    cancellation
+
+7. LangGraph
+Many people write LangGraph on resumes without ever understanding it.
+
+    Ask:
+
+    Why did you choose LangGraph instead of just using asyncio with Python?
+
+    Expected topics:
+
+    state graph
+    nodes
+    edges
+    checkpointing
+    conditional routing
+    memory
+    Then ask:
+
+    Explain your graph nodes.
+
+    If they cannot explain nodes and edges, they probably copied it.
+
+    Deep technical questions
+    Architecture
+    Explain the entire request lifecycle from user request to final response.
+
+    You want something like:
+
+    Client
+
+    ↓
+
+    FastAPI
+
+    ↓
+
+    LangGraph
+
+    ↓
+
+    Broker
+
+    ↓
+
+    Worker selection
+
+    ↓
+
+    WebSocket
+
+    ↓
+
+    Agent
+
+    ↓
+
+    LLM
+
+    ↓
+
+    Broker
+
+    ↓
+
+    Aggregator
+
+    ↓
+
+    LangGraph state update
+
+    ↓
+
+    Client response
+
+8. Networking
+    Ask:
+
+    Why WebSockets instead of REST?
+
+    Expected:
+
+    persistent connections
+    streaming
+    lower overhead
+    bidirectional communication
+    ngrok
+    Ask:
+
+    Why did you need ngrok?
+
+    Expected:
+
+    Workers were behind NAT, so ngrok exposed local FastAPI servers.
+
+    Then ask:
+
+    What problems did ngrok create?
+
+    Possible answers:
+
+    changing URLs
+    latency
+    tunnel instability
+    authentication
+    Async
+
+    Ask:
+
+    Which asyncio primitives did you use?
+
+    Expected:
+
+    gather()
+    create_task()
+    wait()
+    Queue
+    Semaphore
+
+9. Scaling
+    Ask:
+
+    Suppose you have 500 agents.
+
+    How would you redesign?
+
+    Good discussion: (remember candiadte has just entered 3rd year)
+
+    RabbitMQ
+    Kafka
+    Redis Streams
+    Celery
+    Kubernetes
+    Load Balancer
+    Failures
+    Ask:
+
+    Worker crashes during execution.
+
+    Now what?
+
+    Expected:
+
+    heartbeat
+    timeout
+    retry
+    idempotency
+    state recovery
+    LangGraph internals
+    Ask:
+
+    What exactly was stored in LangGraph state?
+
+    Expected:
+
+    messages
+
+    completed agents
+
+    pending agents
+
+    shared memory
+
+    results
+
+    metadata
+
+    Coding question
+    Ask them to implement this.
+
+    Run five async workers.
+
+    Return the first successful result.
+
+    Cancel the remaining workers.
+
+    If they genuinely built this project, this should be straightforward.
+
+10. Design improvement (remember candiadte has just entered 3rd year)
+    Ask:
+
+    Looking back, what would you change?
+
+    Strong candidates usually volunteer ideas like:
+
+    Redis pub/sub instead of WebSockets
+    RabbitMQ for reliability
+    Kubernetes
+    Docker Compose
+    Better retry logic
+    Authentication
+    Monitoring with Prometheus/Grafana
+    Weak candidates often say:
+
+    Nothing.
